@@ -24,3 +24,9 @@ var roleResourceType = &v2.ResourceType{
 	DisplayName: "Role",
 	Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_ROLE},
 }
+
+var roleBindingResourceType = &v2.ResourceType{
+	Id:          "rolebinding",
+	DisplayName: "RoleBinding",
+	Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_ROLE},
+}
