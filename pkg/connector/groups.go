@@ -9,6 +9,8 @@ import (
 	"github.com/conductorone/baton-sdk/pkg/annotations"
 	"github.com/conductorone/baton-sdk/pkg/pagination"
 	ent "github.com/conductorone/baton-sdk/pkg/types/entitlement"
+	"github.com/conductorone/baton-sdk/pkg/types/grant"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type groupBuilder struct {
@@ -47,14 +49,15 @@ func (o *groupBuilder) Entitlements(_ context.Context, resource *v2.Resource, _ 
 }
 
 func (o *groupBuilder) Grants(ctx context.Context, resource *v2.Resource, pToken *pagination.Token) ([]*v2.Grant, string, annotations.Annotations, error) {
-	users, err := o.client.ListUsers(ctx)
+	group, err := o.client.UsersClient.Groups().Get(ctx, resource.DisplayName, metav1.GetOptions{})
 	if err != nil {
-		return nil, "", nil, fmt.Errorf("unable to list users to match their group membership, error: %w", err)
+		return nil, "", nil, err
 	}
-
-	grants, err := o.client.MatchUsersToGroup(ctx, resource, users)
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("unable to match users membership to groups, error: %w", err)
+	users := group.Users
+	grants := make([]*v2.Grant, 0, len(users))
+	for _, user := range users {
+		principal := &v2.Resource{Id: &v2.ResourceId{ResourceType: userResourceType.Id, Resource: user}}
+		grants = append(grants, grant.NewGrant(resource, "member", principal))
 	}
 	return grants, "", nil, nil
 }
