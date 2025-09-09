@@ -60,7 +60,7 @@ func convertV1User2Resource(user v1.User) (*v2.Resource, error) {
 			},
 			Annotations: annos,
 		},
-		string(user.UID),
+		user.Name,
 		traits,
 	)
 }
@@ -185,12 +185,10 @@ func convertV1Group2Resource(group v1.Group) (*v2.Resource, error) {
 		group.GetName(),
 		&v2.ResourceType{
 			Id:          "group",
-			DisplayName: "Team",
-			Traits: []v2.ResourceType_Trait{
-				v2.ResourceType_TRAIT_GROUP,
-			},
+			DisplayName: "Group",
+			Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_GROUP},
 		},
-		string(group.UID),
+		group.GetName(),
 		traits,
 	)
 }
