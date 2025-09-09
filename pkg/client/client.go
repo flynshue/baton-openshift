@@ -15,8 +15,8 @@ import (
 // Client is an abstraction that sits between Openshift/Kubernetes Go
 // API client and the Baton connector code needed by Baton SDK.
 type Client struct {
-	usersClient *userv1.UserV1Client
-	k8sClient   *kubernetes.Clientset
+	UsersClient *userv1.UserV1Client
+	K8sClient   *kubernetes.Clientset
 }
 
 func New(c *rest.Config) (*Client, error) {
@@ -29,12 +29,12 @@ func New(c *rest.Config) (*Client, error) {
 		return nil, fmt.Errorf("unable to create the k8s client, error: %w", err)
 	}
 
-	return &Client{usersClient: usrc, k8sClient: k8sc}, nil
+	return &Client{UsersClient: usrc, K8sClient: k8sc}, nil
 }
 
 // ListUsers list the users of the Openshift cluster.
 func (c *Client) ListUsers(ctx context.Context) ([]*v2.Resource, error) {
-	list, err := c.usersClient.Users().List(ctx, metav1.ListOptions{})
+	list, err := c.UsersClient.Users().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *Client) ListUsers(ctx context.Context) ([]*v2.Resource, error) {
 
 // ListRoles list the available (roles) entitlements in a namespace.
 func (c *Client) ListRoles(ctx context.Context, namespace string) ([]*v2.Resource, error) {
-	list, err := c.k8sClient.RbacV1().Roles(namespace).List(ctx, metav1.ListOptions{})
+	list, err := c.K8sClient.RbacV1().Roles(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("unable to list entitlements, error: %w", err)
 	}
@@ -63,7 +63,7 @@ func (c *Client) ListRoles(ctx context.Context, namespace string) ([]*v2.Resourc
 
 // ListRoleBindings matches a user with a role (rolebinding) in a namespace.
 func (c *Client) ListRoleBindings(ctx context.Context, namespace string, entitlement *v2.Resource, users []*v2.Resource) ([]*v2.Grant, error) {
-	list, err := c.k8sClient.RbacV1().RoleBindings(namespace).List(ctx, metav1.ListOptions{})
+	list, err := c.K8sClient.RbacV1().RoleBindings(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("unable to list grants, error: %w", err)
 	}
@@ -78,7 +78,7 @@ func (c *Client) ListRoleBindings(ctx context.Context, namespace string, entitle
 
 // ListGroups list all available groups on the Openshift cluster.
 func (c *Client) ListGroups(ctx context.Context) ([]*v2.Resource, error) {
-	list, err := c.usersClient.Groups().List(ctx, metav1.ListOptions{})
+	list, err := c.UsersClient.Groups().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (c *Client) ListGroups(ctx context.Context) ([]*v2.Resource, error) {
 func (c *Client) MatchUsersToGroup(ctx context.Context, entitlement *v2.Resource, users []*v2.Resource) ([]*v2.Grant, error) {
 	var gnts []*v2.Grant
 
-	list, err := c.usersClient.Groups().List(ctx, metav1.ListOptions{})
+	list, err := c.UsersClient.Groups().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
