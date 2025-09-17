@@ -7,6 +7,8 @@ import (
 	v2 "github.com/conductorone/baton-sdk/pb/c1/connector/v2"
 	"github.com/conductorone/baton-sdk/pkg/annotations"
 	"github.com/conductorone/baton-sdk/pkg/pagination"
+	rs "github.com/conductorone/baton-sdk/pkg/types/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type userBuilder struct {
@@ -19,11 +21,35 @@ func (o *userBuilder) ResourceType(ctx context.Context) *v2.ResourceType {
 }
 
 func (o *userBuilder) List(ctx context.Context, parentResourceID *v2.ResourceId, pToken *pagination.Token) ([]*v2.Resource, string, annotations.Annotations, error) {
-	list, err := o.client.ListUsers(ctx)
+	groupList, err := o.client.UsersClient.Groups().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, "", nil, err
 	}
-	return list, "", nil, nil
+	users := make([]string, 0, len(groupList.Items))
+	for _, group := range groupList.Items {
+		userList := group.Users
+		users = append(users, userList...)
+	}
+	resources := make([]*v2.Resource, 0, len(users))
+	for _, user := range users {
+		profile := map[string]interface{}{
+			"name": user,
+		}
+
+		resource, err := rs.NewUserResource(
+			user,
+			userResourceType,
+			user,
+			[]rs.UserTraitOption{
+				rs.WithUserProfile(profile),
+			},
+		)
+		if err != nil {
+			return nil, "", nil, err
+		}
+		resources = append(resources, resource)
+	}
+	return resources, "", nil, nil
 }
 
 func (o *userBuilder) Entitlements(_ context.Context, resource *v2.Resource, _ *pagination.Token) ([]*v2.Entitlement, string, annotations.Annotations, error) {

@@ -11,6 +11,12 @@ var userResourceType = &v2.ResourceType{
 	Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_USER},
 }
 
+var serviceAccountResourceType = &v2.ResourceType{
+	Id:          "service_account",
+	DisplayName: "Service Account",
+	Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_USER},
+}
+
 // The group resource type is for all group objects from Openshift.
 var groupResourceType = &v2.ResourceType{
 	Id:          "group",
