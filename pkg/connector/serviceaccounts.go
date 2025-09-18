@@ -41,7 +41,7 @@ func (o *serviceAccountBuilder) List(ctx context.Context, parentResourceID *v2.R
 			name,
 			[]rs.UserTraitOption{
 				rs.WithUserProfile(profile),
-				rs.WithAccountType(v2.UserTrait_ACCOUNT_TYPE_SYSTEM),
+				rs.WithAccountType(v2.UserTrait_ACCOUNT_TYPE_SERVICE),
 			},
 			rs.WithDescription(fmt.Sprintf("%s Kubernetes ServiceAccount in %s", svcAccount.Name, svcAccount.Namespace)),
 		)
