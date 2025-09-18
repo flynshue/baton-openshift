@@ -3,7 +3,6 @@ package connector
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/conductorone/baton-openshift/pkg/client"
@@ -64,7 +63,6 @@ func (o *roleBindingBuilder) Entitlements(ctx context.Context, resource *v2.Reso
 }
 
 func (o *roleBindingBuilder) Grants(ctx context.Context, resource *v2.Resource, _ *pagination.Token) ([]*v2.Grant, string, annotations.Annotations, error) {
-	log.Println(resource.DisplayName)
 	namespace, rolebindingName := parseResourceName(resource.DisplayName)
 	rb, err := o.client.K8sClient.RbacV1().RoleBindings(namespace).Get(ctx, rolebindingName, metav1.GetOptions{})
 	if err != nil {
@@ -129,7 +127,7 @@ func convertRole2Resource(roleBinding rbacv1.RoleBinding) (*v2.Resource, error) 
 		roleBindingResourceType,
 		resourceName,
 		[]rs.RoleTraitOption{rs.WithRoleProfile(profile)},
-		rs.WithDescription(fmt.Sprintf("Rolebinding %s grants %s %s in namespace %", roleBinding.Name, roleBinding.RoleRef.Kind, roleBinding.RoleRef.Name)),
+		rs.WithDescription(fmt.Sprintf("Rolebinding %s grants %s %s in namespace %s", roleBinding.Name, roleBinding.RoleRef.Kind, roleBinding.RoleRef.Name, roleBinding.Namespace)),
 	)
 	if err != nil {
 		return nil, err
