@@ -25,7 +25,7 @@ func TestGetResourceName(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			namespace, name := getResourceName(tc.resourceName)
+			namespace, name := parseResourceName(tc.resourceName)
 			assert.Equal(t, tc.name, name, "rolebinding name should match")
 			assert.Equal(t, tc.namespace, namespace, "namespace name should match")
 		})

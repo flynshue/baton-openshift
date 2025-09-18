@@ -40,6 +40,7 @@ func (o *serviceAccountBuilder) List(ctx context.Context, parentResourceID *v2.R
 			serviceAccountResourceType,
 			name,
 			[]rs.UserTraitOption{rs.WithUserProfile(profile)},
+			rs.WithDescription(fmt.Sprintf("%s Kubernetes ServiceAccount in %s", svcAccount.Name, svcAccount.Namespace)),
 		)
 		if err != nil {
 			return nil, "", nil, err

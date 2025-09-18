@@ -65,7 +65,7 @@ func (o *roleBindingBuilder) Entitlements(ctx context.Context, resource *v2.Reso
 
 func (o *roleBindingBuilder) Grants(ctx context.Context, resource *v2.Resource, _ *pagination.Token) ([]*v2.Grant, string, annotations.Annotations, error) {
 	log.Println(resource.DisplayName)
-	namespace, rolebindingName := getResourceName(resource.DisplayName)
+	namespace, rolebindingName := parseResourceName(resource.DisplayName)
 	rb, err := o.client.K8sClient.RbacV1().RoleBindings(namespace).Get(ctx, rolebindingName, metav1.GetOptions{})
 	if err != nil {
 		return nil, "", nil, err
@@ -129,6 +129,7 @@ func convertRole2Resource(roleBinding rbacv1.RoleBinding) (*v2.Resource, error) 
 		roleBindingResourceType,
 		resourceName,
 		[]rs.RoleTraitOption{rs.WithRoleProfile(profile)},
+		rs.WithDescription(fmt.Sprintf("Rolebinding %s grants %s %s in namespace %", roleBinding.Name, roleBinding.RoleRef.Kind, roleBinding.RoleRef.Name)),
 	)
 	if err != nil {
 		return nil, err
@@ -137,7 +138,7 @@ func convertRole2Resource(roleBinding rbacv1.RoleBinding) (*v2.Resource, error) 
 	return resource, nil
 }
 
-func getResourceName(resourceName string) (namespace, name string) {
+func parseResourceName(resourceName string) (namespace, name string) {
 	namespace, resource, _ := strings.Cut(resourceName, ":")
 	if strings.Count(resource, ":") > 1 {
 		fields := strings.Split(resource, ":")
