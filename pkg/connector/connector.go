@@ -23,6 +23,7 @@ func (d *Connector) ResourceSyncers(ctx context.Context) []connectorbuilder.Reso
 		newGroupBuilder(d.namespace, d.client),
 		newroleBindingBuilder(d.client),
 		newServiceAccountBuilder(d.client),
+		newClusterRoleBindingBuilder(d.client),
 	}
 }
 

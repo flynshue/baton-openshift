@@ -36,3 +36,9 @@ var roleBindingResourceType = &v2.ResourceType{
 	DisplayName: "RoleBinding",
 	Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_ROLE},
 }
+
+var clusterRoleBindingResourceType = &v2.ResourceType{
+	Id:          "cluster_rolebinding",
+	DisplayName: "Cluster RoleBinding",
+	Traits:      []v2.ResourceType_Trait{v2.ResourceType_TRAIT_ROLE},
+}
